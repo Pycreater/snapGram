@@ -14,18 +14,24 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/ui/input";
 
-import { Button } from "@/components/ui/button"
-import { useForm } from "react-hook-form"
-import { SignupValidation } from "@/lib/validation"
-import { Loader } from "lucide-react"
-import { createUserAccount } from "@/lib/appwrite/api"
+import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { SignupValidation } from "@/lib/validation";
+import { Loader } from "lucide-react";
+import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations";
+import { useUserContext } from "@/context/AuthContext"
 
 
 const SignupForm = () => {
   const { toast } = useToast()
-  const isLoading = false;
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  // const isLoading = false;
+
+  const { mutateAsync: createUserAccount, isLoading: isCreatingUser } = useCreateUserAccount();
+
+  const { mutateAsync: signInAccount, isLoading: isSigningIn } = useSignInAccount();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({
@@ -42,12 +48,22 @@ const SignupForm = () => {
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
     const newUser = await createUserAccount(values);
 
-    if(!newUser) {
+    if (!newUser) {
       return toast({
         title: ' Sign up failed. Please try again.'
       })
     }
-    // const session = await signInAccount()
+    const session = await signInAccount({
+      email: values.email,
+      password: values.password,
+    })
+
+    if(!session) {
+      return toast({ title: 'Sign in failed. Please try again.'})
+    }
+
+    const isLoggedIn = await checkAuthUser();
+
   }
 
   return (
@@ -126,22 +142,22 @@ const SignupForm = () => {
             )}
           />
           <Button type="submit"
-          className="shad-button_primary">
+            className="shad-button_primary">
             {
-              isLoading ? (
+              isCreatingUser ? (
                 <div className="flex-center gap-2">
                   <Loader />Loading....
                 </div>
-              ): "Sign up"
+              ) : "Sign up"
             }
           </Button>
 
-            <p className="text-small-regular text-light-2 text-center mt-2">
+          <p className="text-small-regular text-light-2 text-center mt-2">
             Already have an account?
             <Link to="/sign-in" className="text-primary-500 text-small-semibold ml-1">
               Log in
             </Link>
-            </p>
+          </p>
 
         </form>
       </div>
