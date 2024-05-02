@@ -1,10 +1,14 @@
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Link } from 'react-router-dom'
+
+import { useToast } from "@/components/ui/use-toast"
+
+
 import {
   Form,
   FormControl,
-  FormDescription,
+  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,10 +20,11 @@ import { Button } from "@/components/ui/button"
 import { useForm } from "react-hook-form"
 import { SignupValidation } from "@/lib/validation"
 import { Loader } from "lucide-react"
+import { createUserAccount } from "@/lib/appwrite/api"
 
 
 const SignupForm = () => {
-
+  const { toast } = useToast()
   const isLoading = false;
 
   // 1. Define your form.
@@ -34,10 +39,15 @@ const SignupForm = () => {
   })
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof SignupValidation>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof SignupValidation>) {
+    const newUser = await createUserAccount(values);
+
+    if(!newUser) {
+      return toast({
+        title: ' Sign up failed. Please try again.'
+      })
+    }
+    // const session = await signInAccount()
   }
 
   return (
@@ -46,7 +56,7 @@ const SignupForm = () => {
       <div className="sm:w-420 flex-center flex-col">
         <img src="/assets/images/logo.svg" alt="logo" />
 
-        <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12">Create a new account</h2>
+        <h2 className="h3-bold md:h2-bold pt-5 sm:pt-4">Create a new account</h2>
         <p className="text-light-3 small-medium md:base-regular mt-2">To use Snapgram enter your details</p>
 
 
@@ -60,9 +70,9 @@ const SignupForm = () => {
                 <FormControl>
                   <Input type="text" className="shad-input" {...field} />
                 </FormControl>
-                <FormDescription>
+                {/* <FormDescription>
                   This is your public display name.
-                </FormDescription>
+                </FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
@@ -76,9 +86,9 @@ const SignupForm = () => {
                 <FormControl>
                   <Input type="text" className="shad-input" {...field} />
                 </FormControl>
-                <FormDescription>
+                {/* <FormDescription>
                   This is your public display Username.
-                </FormDescription>
+                </FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
@@ -92,9 +102,9 @@ const SignupForm = () => {
                 <FormControl>
                   <Input type="email" className="shad-input" {...field} />
                 </FormControl>
-                <FormDescription>
+                {/* <FormDescription>
                   This is your public display email.
-                </FormDescription>
+                </FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
@@ -108,9 +118,9 @@ const SignupForm = () => {
                 <FormControl>
                   <Input type="password" className="shad-input" {...field} />
                 </FormControl>
-                <FormDescription>
+                {/* <FormDescription>
                   This is your public display name.
-                </FormDescription>
+                </FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
@@ -128,7 +138,7 @@ const SignupForm = () => {
 
             <p className="text-small-regular text-light-2 text-center mt-2">
             Already have an account?
-            <Link to="/sign-in" className="text-primary">
+            <Link to="/sign-in" className="text-primary-500 text-small-semibold ml-1">
               Log in
             </Link>
             </p>
