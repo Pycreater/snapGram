@@ -3,26 +3,18 @@ import { Models } from "appwrite";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Button,
-  Input,
-  Textarea,
-} from "@/components/ui";
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import { PostValidation } from "@/lib/validation";
 import { useToast } from "@/components/ui/use-toast";
 import { useUserContext } from "@/context/AuthContext";
 import { useCreatePost } from "@/lib/react-query/queriesAndMutations";
 import FileUploader from "../shared/FileUploader";
 import Loader from "../shared/Loader";
-// import { FileUploader, Loader } from "@/components/shared";
-// import { useCreatePost, useUpdatePost } from "@/lib/react-query/queries";
+import { Textarea } from "../ui/textarea";
+import { createPost } from "@/lib/appwrite/api";
 
 type PostFormProps = {
   post?: Models.Document;
@@ -46,8 +38,8 @@ const PostForm = ({ post, action }: PostFormProps) => {
   // Query
   const { mutateAsync: createPost, isLoading: isLoadingCreate } =
     useCreatePost();
-  const { mutateAsync: updatePost, isLoading: isLoadingUpdate } =
-    useUpdatePost();
+  // const { mutateAsync: updatePost, isLoading: isLoadingUpdate } =
+  //   // useUpdatePost();
 
   // Handler
   const handleSubmit = async (value: z.infer<typeof PostValidation>) => {
@@ -141,7 +133,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="shad-form_label">
-                Add Tags (separated by comma " , ")
+                Add Tags (seprated by comma " , ")
               </FormLabel>
               <FormControl>
                 <Input
@@ -165,10 +157,8 @@ const PostForm = ({ post, action }: PostFormProps) => {
           </Button>
           <Button
             type="submit"
-            className="shad-button_primary whitespace-nowrap"
-            disabled={isLoadingCreate || isLoadingUpdate}>
-            {(isLoadingCreate || isLoadingUpdate) && <Loader />}
-            {action} Post
+            className="shad-button_primary whitespace-nowrap">
+              Submit
           </Button>
         </div>
       </form>
@@ -177,3 +167,6 @@ const PostForm = ({ post, action }: PostFormProps) => {
 };
 
 export default PostForm;
+            // disabled={isLoadingCreate || isLoadingUpdate}>
+            // {(isLoadingCreate || isLoadingUpdate) && <Loader />}
+            // {/* {action} Post */}
