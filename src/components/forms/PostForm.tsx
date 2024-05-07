@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { PostValidation } from "@/lib/validation";
 import { useToast } from "@/components/ui/use-toast";
 import { useUserContext } from "@/context/AuthContext";
-import { useCreatePost } from "@/lib/react-query/queriesAndMutations";
+import { useCreatePost, useUpdatePost } from "@/lib/react-query/queriesAndMutations";
 import FileUploader from "../shared/FileUploader";
 import Loader from "../shared/Loader";
 import { Textarea } from "../ui/textarea";
@@ -36,10 +36,10 @@ const PostForm = ({ post, action }: PostFormProps) => {
   });
 
   // Query
-  const { mutateAsync: createPost, isLoading: isLoadingCreate } =
+  const { mutateAsync: createPost, isPending: isLoadingCreate } =
     useCreatePost();
-  // const { mutateAsync: updatePost, isLoading: isLoadingUpdate } =
-  //   // useUpdatePost();
+  const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
+    useUpdatePost();
 
   // Handler
   const handleSubmit = async (value: z.infer<typeof PostValidation>) => {
@@ -157,8 +157,11 @@ const PostForm = ({ post, action }: PostFormProps) => {
           </Button>
           <Button
             type="submit"
-            className="shad-button_primary whitespace-nowrap">
-              Submit
+            className="shad-button_primary whitespace-nowrap"
+            disabled={isLoadingCreate || isLoadingUpdate}
+            >
+              {isLoadingCreate || isLoadingUpdate && 'Loading...'}
+              {action} Post
           </Button>
         </div>
       </form>
@@ -167,6 +170,3 @@ const PostForm = ({ post, action }: PostFormProps) => {
 };
 
 export default PostForm;
-            // disabled={isLoadingCreate || isLoadingUpdate}>
-            // {(isLoadingCreate || isLoadingUpdate) && <Loader />}
-            // {/* {action} Post */}
